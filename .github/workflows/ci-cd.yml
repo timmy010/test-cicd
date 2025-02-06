@@ -27,15 +27,6 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/html"
         scp -o StrictHostKeyChecking=no -r ./docker-compose.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
 
-    - name: Create .env file on VPS
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-          echo 'POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}' > /var/www/html/.env
-          echo 'POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}' >> /var/www/html/.env
-          echo 'POSTGRES_USER=${{ secrets.POSTGRES_USER }}' >> /var/www/html/.env
-          echo 'POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}' >> /var/www/html/.env
-        "
-
     - name: Deploy with Docker Compose
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/html && docker-compose up -d"
