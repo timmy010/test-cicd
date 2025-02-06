@@ -4,52 +4,30 @@ on:
   push:
     branches:
       - master
-      - dev
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - name: Build Docker images
-        run: docker-compose -f docker-compose.yml build
-
   deploy:
-    runs-on: ubuntu-22.04
-    needs: build
-    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Add VPS to known_hosts
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to VPS
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
-          scp -i private_key -r ./app/* $VPS_USER@$VPS_HOST:/var/www/html/app
-          scp -i private_key docker-compose.yml $VPS_USER@$VPS_HOST:/var/www/html/docker-compose.yml
-          scp -i private_key nginx.conf $VPS_USER@$VPS_HOST:/var/www/html/nginx.conf
-          ssh -i private_key $VPS_USER@$VPS_HOST 'cd /var/www/html && docker-compose down && docker-compose up -d'
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          cd /var/www/html
+          git pull origin master
+          docker-compose down
+          docker-compose up -d --build
+        EOF
