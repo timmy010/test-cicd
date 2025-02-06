@@ -26,6 +26,15 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/html"
         scp -o StrictHostKeyChecking=no -r ./docker-compose.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+
+    - name: Set permissions on VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html/app/tests
+          sudo find /var/www/html/app/tests -type f -exec chmod 644 {} \;
+          sudo chmod +x /var/www/html/vendor/bin/phpunit
+        "
     
     - name: Export env
       run: |
@@ -49,6 +58,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
 
       - name: Run tests in php_app container
         run: |
