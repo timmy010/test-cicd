@@ -26,7 +26,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/html"
         scp -o StrictHostKeyChecking=no -r ./docker-compose.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
-
+    
     - name: Export env
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
@@ -39,6 +39,11 @@ jobs:
     - name: Deploy with Docker Compose
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/html && docker-compose up -d || docker-compose up --build -d"
+
+    - name: Check Docker Logs on Failure
+      if: ${{ failure() }}
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "docker logs php_app"
 
   run-tests:
     runs-on: ubuntu-latest
@@ -58,26 +63,4 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
           cd /var/www/html && docker exec php_app ./vendor/bin/phpunit ./app/tests
-        "
-
-  revert-request:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    needs: deploy
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
-
-    - name: Revert changes on VPS
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-          cd /var/www/html && git reset --hard HEAD~1 && git clean -fd
-          docker-compose down && docker-compose up -d
         "
