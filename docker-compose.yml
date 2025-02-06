@@ -2,15 +2,14 @@ version: '3.8'
 
 services:
   app:
-    image: php:8-fpm
+    build:
+      context: .
+      dockerfile: fpm/Dockerfile
     container_name: php_app
     volumes:
         - ./app:/var/www/html
     networks:
         - app-network
-    depends_on:
-        - redis
-        - rabbitmq
 
   nginx:
     image: nginx:latest
@@ -25,21 +24,6 @@ services:
         - app-network
     depends_on:
         - app
-
-  redis:
-    image: redis:latest
-    container_name: redis
-    networks:
-        - app-network
-
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    ports:
-        - "15672:15672" # RabbitMQ Management UI
-        - "5672:5672"    # RabbitMQ AMQP port
-    networks:
-        - app-network
 
 networks:
   app-network:
