@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libpq-dev \
     libzip-dev \
-    && docker-php-ext-install pdo pgsql pdo_pgsql zip sockets
+    libxml2-dev \
+    && docker-php-ext-install pdo pgsql pdo_pgsql zip sockets dom
 
 RUN pecl install redis && docker-php-ext-enable redis
 
@@ -13,7 +14,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-COPY app/composer.json .  
+COPY app/composer.json .
 
 RUN chown -R www-data:www-data /var/www/html
 
