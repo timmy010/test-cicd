@@ -38,4 +38,8 @@ jobs:
 
     - name: Deploy with Docker Compose
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/html && docker-compose up -d || docker-compose up --build -d"
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          cd /var/www/html 
+          && docker-compose down
+          && docker-compose up -d || docker-compose up --build -d
+        "
