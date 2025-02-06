@@ -39,8 +39,3 @@ jobs:
     - name: Deploy with Docker Compose
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/html && docker-compose up -d || docker-compose up --build -d"
-
-    - name: Check Docker Logs on Failure
-      if: ${{ failure() }}
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "docker logs php_app"
