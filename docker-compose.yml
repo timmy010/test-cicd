@@ -8,6 +8,11 @@ services:
     container_name: php_app
     volumes:
         - ./app:/var/www/html
+    environment:
+        - POSTGRES_HOST=${POSTGRES_HOST}
+        - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
         - app-network
 
