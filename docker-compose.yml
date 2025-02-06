@@ -7,7 +7,8 @@ services:
       dockerfile: fpm/Dockerfile
     container_name: php_app
     volumes:
-        - ./app:/var/www/html
+        - ./app:/var/www/html/app
+        - ./app/src/logs:/var/www/html/app/src/logs
     environment:
         - POSTGRES_HOST=${POSTGRES_HOST}
         - POSTGRES_DATABASE=${POSTGRES_DATABASE}
@@ -21,7 +22,7 @@ services:
     container_name: nginx
     volumes:
         - ./nginx.conf:/etc/nginx/nginx.conf
-        - ./app:/var/www/html
+        - ./app:/var/www/html/app
     ports:
         - "80:80"
         - "443:443"
