@@ -26,8 +26,8 @@ jobs:
     - name: Deploy to VPS
       run: |
         ssh -t ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          cd /var/www/html
-          git pull origin master
-          docker-compose down
-          docker-compose up -d --build
+          cd /var/www/html || exit
+          git pull origin master || exit
+          docker-compose down || exit
+          docker-compose up -d --build || exit
         EOF
