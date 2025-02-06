@@ -26,16 +26,19 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/html"
         scp -o StrictHostKeyChecking=no -r ./docker-compose.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
-
-    - name: Deploy with Docker Compose
+    
+    - name: Export env
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
           export POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
           export POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
           export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          cd /var/www/html && docker-compose up -d || docker-compose up --build -d
         "
+
+    - name: Deploy with Docker Compose
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/html && docker-compose up -d || docker-compose up --build -d"
 
     - name: Check Docker Logs on Failure
       if: ${{ failure() }}
