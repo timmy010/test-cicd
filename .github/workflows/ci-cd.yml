@@ -33,7 +33,6 @@ jobs:
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html/app/tests
           sudo find /var/www/html/app/tests -type f -exec chmod 644 {} \;
-          sudo chmod +x /var/www/html/vendor/bin/phpunit
         "
     
     - name: Export env
