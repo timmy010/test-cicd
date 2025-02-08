@@ -26,7 +26,7 @@ jobs:
       - name: Check for changes in composer.json
         id: check-composer
         run: |
-          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile || echo "composer_changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile docker-compose.prod.yml || echo "composer_changed=true" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
