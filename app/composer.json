@@ -13,9 +13,7 @@
         "slim/slim": "^4.14",
         "slim/psr7": "^1.7",
         "monolog/monolog": "^3.8",
-        "guzzlehttp/guzzle": "^7.0"
-    },
-    "require-dev": {
+        "guzzlehttp/guzzle": "^7.0",
         "phpunit/phpunit": "^10.0"
     }
 }
