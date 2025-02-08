@@ -42,9 +42,6 @@ class CreateUsersTable
 
     private function prepareAdminUserdata(): array
     {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-
         return [
             'name' => 'admin',
             'email' => $_ENV['ADMIN_USER_EMAIL'],
