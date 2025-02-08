@@ -11,13 +11,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
-      ADMIN_USER_EMAIL: ${{ secrets.ADMIN_USER_EMAIL }}
-      ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -26,7 +19,7 @@ jobs:
       - name: Check for changes in composer.json
         id: check-composer
         run: |
-          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile docker-compose.prod.yml || echo "composer_changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile || echo "composer_changed=true" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -45,6 +38,17 @@ jobs:
             sudo chown -R www-data:www-data /var/www/html
             sudo chmod -R 755 /var/www/html/app/tests
             sudo find /var/www/html/app/tests -type f -exec chmod 644 {} \;
+          "
+
+      - name: Export env
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+            export POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            export POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
+            export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            export ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
+            export ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
           "
 
       - name: Deploy with Docker Compose
