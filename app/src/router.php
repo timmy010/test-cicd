@@ -27,6 +27,11 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
+$app->get('/', function (Request $request, Response $response, array $args) {
+    $response->getBody()->write('Hello World');
+    return $response;
+});
+
 $app->group('/api/v1', function (RouteCollectorProxy $group) {
     $group->group('/users', function (RouteCollectorProxy $group) {
         $userController = new UserController();
