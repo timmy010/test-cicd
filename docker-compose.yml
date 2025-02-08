@@ -9,6 +9,7 @@ services:
     volumes:
         - ./app:/var/www/html
         - ./app/src/logs:/var/www/html/src/logs
+        - /var/www/html/vendor
     environment:
         - POSTGRES_HOST=${POSTGRES_HOST}
         - POSTGRES_DATABASE=${POSTGRES_DATABASE}

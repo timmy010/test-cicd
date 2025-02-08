@@ -15,10 +15,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www/html
 
-COPY app/composer.json .  
+COPY app/composer.json app/composer.lock* ./  
+
+RUN composer install --no-interaction --no-scripts --no-autoloader
+
+COPY app/ .
+
+RUN composer dump-autoload --optimize
 
 RUN chown -R www-data:www-data /var/www/html
-
-RUN composer install
 
 EXPOSE 9000
