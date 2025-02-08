@@ -39,13 +39,13 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             cat > /var/www/html/.env <<EOL
-            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-            POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
-            ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
-            EOL
+                POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+                POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
+                POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+                POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+                ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
+                ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
+              EOL
             EOF
 
       - name: Deploy with Docker Compose
