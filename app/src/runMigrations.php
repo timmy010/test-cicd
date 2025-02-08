@@ -6,7 +6,7 @@ use App\Migrations\CreateOrderStatusTable;
 use App\Migrations\CreateProfilesTable;
 use App\Migrations\CreateUsersTable;
 
-require __DIR__ . '/../vendor/autoload.php';
+require dirname(__DIR__, 1) . "/vendor/autoload.php";
 
 $migrations = [
     new CreateOrderStatusTable(),
