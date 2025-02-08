@@ -6,19 +6,21 @@ services:
       context: .
       dockerfile: fpm/Dockerfile
     container_name: php_app
+    env_file:
+        - /var/www/html/.env
     volumes:
         - ./app:/var/www/html
         - ./app/src/logs:/var/www/html/src/logs
         - /var/www/html/vendor
-    environment:
-        - POSTGRES_HOST
-        - POSTGRES_DATABASE
-        - POSTGRES_USER
-        - POSTGRES_PASSWORD
-        - PGADMIN_DEFAULT_EMAIL
-        - PGADMIN_DEFAULT_PASSWORD
-        - ADMIN_USER_EMAIL
-        - ADMIN_USER_PASSWORD
+    # environment:
+    #     - POSTGRES_HOST
+    #     - POSTGRES_DATABASE
+    #     - POSTGRES_USER
+    #     - POSTGRES_PASSWORD
+    #     - PGADMIN_DEFAULT_EMAIL
+    #     - PGADMIN_DEFAULT_PASSWORD
+    #     - ADMIN_USER_EMAIL
+    #     - ADMIN_USER_PASSWORD
     networks:
         - app-network
 
