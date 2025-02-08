@@ -19,7 +19,7 @@ jobs:
       - name: Check for changes in composer.json
         id: check-composer
         run: |
-          git diff --quiet HEAD^ HEAD -- composer.json || echo "composer_changed=true" >> $GITHUB_OUTPUT
+          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile || echo "composer_changed=true" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -30,7 +30,7 @@ jobs:
       - name: Copy files to VPS
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /var/www/html"
-          scp -o StrictHostKeyChecking=no -r ./docker-compose.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+          scp -o StrictHostKeyChecking=no -r ./docker-compose.prod.yml ./nginx.conf ./app ./fpm ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
 
       - name: Set permissions on VPS
         run: |
@@ -47,16 +47,18 @@ jobs:
             export POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
             export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            export ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
+            export ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
           "
 
       - name: Deploy with Docker Compose
         run: |
           if ${{ steps.check-composer.outputs.composer_changed == 'true' }}; then
             ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-              cd /var/www/html && docker-compose down && docker-compose up --build -d
+              cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up --build -d
             "
           else
             ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-              cd /var/www/html && docker-compose down && docker-compose up -d
+              cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up -d
             "
           fi

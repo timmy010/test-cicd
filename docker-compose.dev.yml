@@ -6,15 +6,12 @@ services:
       context: .
       dockerfile: fpm/Dockerfile
     container_name: php_app
+    env_file:
+        - .env
     volumes:
         - ./app:/var/www/html
         - ./app/src/logs:/var/www/html/src/logs
         - /var/www/html/vendor
-    environment:
-        - POSTGRES_HOST=${POSTGRES_HOST}
-        - POSTGRES_DATABASE=${POSTGRES_DATABASE}
-        - POSTGRES_USER=${POSTGRES_USER}
-        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
         - app-network
 
