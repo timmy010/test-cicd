@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch: # Allow manual triggering of the workflow
 
 jobs:
   build:
@@ -95,29 +94,4 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
             cd /var/www/html && docker exec php_app php src/runMigrations.php
-          "
-
-  revert:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' # Only run when manually triggered
-    needs: [build, deploy, run-migrations] # Wait for all other jobs to complete
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
-
-      - name: Revert to previous version
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            cd /var/www/html
-            git fetch origin master
-            git reset --hard origin/master
-            git clean -fd
-            docker-compose -f docker-compose.prod.yml down --remove-orphans && docker-compose -f docker-compose.prod.yml up -d
           "
