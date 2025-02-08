@@ -16,11 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check for changes in composer.json
-        id: check-composer
-        run: |
-          git diff --quiet HEAD^ HEAD -- composer.json composer.lock Dockerfile || echo "composer_changed=true" >> $GITHUB_OUTPUT
-
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -43,22 +38,16 @@ jobs:
       - name: Export env
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            export POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-            export POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
-            export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            export ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
-            export ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}
+            ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}
           "
 
       - name: Deploy with Docker Compose
         run: |
-          if ${{ steps.check-composer.outputs.composer_changed == 'true' }}; then
-            ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
               cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up --build -d
             "
-          else
-            ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-              cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up -d
-            "
-          fi
