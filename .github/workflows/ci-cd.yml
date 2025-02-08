@@ -40,17 +40,6 @@ jobs:
             sudo find /var/www/html/app/tests -type f -exec chmod 644 {} \;
           "
 
-      - name: Export env
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            echo 'POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}' | sudo tee /var/www/html/.env
-            echo 'POSTGRES_DATABASE=${{ secrets.POSTGRES_DATABASE }}' | sudo tee /var/www/html/.env
-            echo 'POSTGRES_USER=${{ secrets.POSTGRES_USER }}' | sudo tee /var/www/html/.env
-            echo 'POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}' | sudo tee /var/www/html/.env
-            echo 'ADMIN_USER_EMAIL=${{ secrets.ADMIN_USER_EMAIL }}' | sudo tee /var/www/html/.env
-            echo 'ADMIN_USER_PASSWORD=${{ secrets.ADMIN_USER_PASSWORD }}' | sudo tee /var/www/html/.env
-          "
-
       - name: Deploy with Docker Compose
         run: |
           if ${{ steps.check-composer.outputs.composer_changed == 'true' }}; then
@@ -62,3 +51,10 @@ jobs:
               cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up -d
             "
           fi
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+          ADMIN_USER_EMAIL: ${{ secrets.ADMIN_USER_EMAIL }}
+          ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
