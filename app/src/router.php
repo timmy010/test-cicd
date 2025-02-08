@@ -28,7 +28,7 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
 });
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write('Hello World');
+    $response->getBody()->write('Hello World 2');
     return $response;
 });
 
