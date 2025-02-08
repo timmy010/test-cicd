@@ -28,7 +28,7 @@ class CreateUsersTable
         $db->exec("CREATE INDEX IF NOT EXISTS idx_email ON users (email)");
 
         $stmt = $db->prepare("INSERT INTO users (name, email, password_hash, api_key, role, created_at, updated_at) 
-            VALUES (:name, :email, :password_hash, :api_key, :role, NOW(), NOW())");
+            VALUES (:name, :email, :password_hash, :api_key, :role, NOW(), NOW()) ON CONFLICT DO NOTHING");
         $stmt->execute($this->prepareAdminUserdata());
     }
 
