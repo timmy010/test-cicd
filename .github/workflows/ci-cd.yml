@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual triggering of the workflow
 
 jobs:
   build:
@@ -99,7 +99,8 @@ jobs:
 
   revert:
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name == 'workflow_dispatch' # Only run when manually triggered
+    needs: [build, deploy, run-migrations] # Wait for all other jobs to complete
 
     steps:
       - name: Checkout code
