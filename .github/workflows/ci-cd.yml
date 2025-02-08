@@ -73,7 +73,7 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-            cd /var/www/html && docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up --build -d
+            cd /var/www/html && docker-compose -f docker-compose.prod.yml down --remove-orphans && docker-compose -f docker-compose.prod.yml up --build -d
           "
 
   revert:
@@ -97,5 +97,5 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
             git clean -fd
-            docker-compose -f docker-compose.prod.yml down && docker-compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.prod.yml down --remove-orphans && docker-compose -f docker-compose.prod.yml up -d
           "
