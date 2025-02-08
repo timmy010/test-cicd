@@ -38,6 +38,51 @@ services:
     depends_on:
         - app
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+        - app-network
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+        - "15672:15672"
+        - "5672:5672"
+    networks:
+        - app-network
+
+  postgres:
+    image: postgres
+    container_name: postgres-truck-api
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./local_pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: postgres-pg-truck-api
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_LISTEN_PORT: 90
+    ports:
+      - "82:90"
+    volumes:
+      - ./local_pgadmin-dаta:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
