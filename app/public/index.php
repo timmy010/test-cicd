@@ -73,38 +73,46 @@
         </ol>
     </p>
     <h2>Методы</h2>
-    <p>
+    <p>Все методы начинаются с <code>/api/v1</code></p>
     <table class="table">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
+      <th scope="col">Метод</th>
+      <th scope="col">REST метод</th>
+      <th scope="col">Описание</th>
+      <th scope="col">Что возвращает</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
+      <th scope="row">/users</th>
+      <td>POST</td>
+      <td>
+        <p>Создание нового пользователя</p>
+        <p>В теле запроса передать JSON с параметрами: name, email, password, role</p>
+      </td>
+      <td>id нового пользователя</td>
     </tr>
     <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
+      <th scope="row">/users</th>
+      <td>GET</td>
+      <td>
+        <p>Получение всех пользователей</p>
+        <p></p>
+      </td>
+      <td>Массив со всеми данными пользователей</td>
     </tr>
     <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
+      <th scope="row">/users</th>
+      <td>GET</td>
+      <td>
+        <p>Получение всех пользователей</p>
+        <p></p>
+      </td>
+      <td>Массив со всеми данными пользователей</td>
     </tr>
   </tbody>
 </table>
-    </p>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
