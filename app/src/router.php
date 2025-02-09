@@ -6,8 +6,6 @@ use App\Controllers\UserController;
 use App\Controllers\OrderController;
 use App\Controllers\ProfileController;
 use App\Middleware\ApiKeyMiddleware;
-use App\Services\AuthService;
-use App\Services\UserService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
