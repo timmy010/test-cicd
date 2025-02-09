@@ -4,7 +4,6 @@ namespace App;
 
 use PDO;
 use PDOException;
-use Dotenv\Dotenv;
 use Exception;
 
 class Database

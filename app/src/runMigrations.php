@@ -3,17 +3,15 @@
 use App\Migrations\CreateCargosTable;
 use App\Migrations\CreateOrdersTable;
 use App\Migrations\CreateOrderStatusTable;
-use App\Migrations\CreateProfilesTable;
 use App\Migrations\CreateUsersTable;
 
-require dirname(__DIR__, 1) . "/vendor/autoload.php";
+require __DIR__ . '/../vendor/autoload.php';
 
 $migrations = [
     new CreateOrderStatusTable(),
     new CreateUsersTable(),
     new CreateOrdersTable(),
     new CreateCargosTable(),
-    new CreateProfilesTable(),
 ];
 
 $successCount = 0;

@@ -4,10 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\UserController;
 use App\Controllers\OrderController;
-use App\Controllers\ProfileController;
 use App\Middleware\ApiKeyMiddleware;
-use App\Services\AuthService;
-use App\Services\UserService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -27,9 +24,19 @@ $app->add(function (Request $request, RequestHandlerInterface $handler): Respons
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
-$app->get('/', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write('Hello World 1');
-    return $response;
+$app->get('/', function ($request, $response) {
+    return $response->withHeader('Content-Type', 'text/html')
+                   ->write(file_get_contents(__DIR__ . '/../public/index.php'));
+});
+
+$app->get('/assets/{file}', function ($request, $response, $args) {
+    $filePath = __DIR__ . '/../public/assets/' . $args['file'];
+    if (file_exists($filePath)) {
+        $mimeType = mime_content_type($filePath);
+        return $response->withHeader('Content-Type', $mimeType)
+                       ->write(file_get_contents($filePath));
+    }
+    return $response->withStatus(404)->write('File not found');
 });
 
 $app->group('/api/v1', function (RouteCollectorProxy $group) {
@@ -40,15 +47,6 @@ $app->group('/api/v1', function (RouteCollectorProxy $group) {
         $group->get('/{id}', [$userController, 'getUserById'])->add(new ApiKeyMiddleware('getUserById'));
         $group->put('/{id}', [$userController, 'updateUser'])->add(new ApiKeyMiddleware('updateUser'));
         $group->delete('/{id}', [$userController, 'deleteUser'])->add(new ApiKeyMiddleware('deleteUser'));
-    });
-
-    $group->group('/profiles', function (RouteCollectorProxy $group) {
-        $profileController = new ProfileController();
-        $group->post('', [$profileController, 'createProfile'])->add(new ApiKeyMiddleware('createProfile'));
-        $group->get('', [$profileController, 'getProfiles'])->add(new ApiKeyMiddleware('getProfiles'));
-        $group->get('/{userId}', [$profileController, 'getProfileByUserId'])->add(new ApiKeyMiddleware('getProfileByUserId'));
-        $group->put('/{id}', [$profileController, 'updateProfile'])->add(new ApiKeyMiddleware('updateProfile'));
-        $group->delete('/{id}', [$profileController, 'deleteProfile'])->add(new ApiKeyMiddleware('deleteProfile'));
     });
 
     $group->group('/orders', function (RouteCollectorProxy $group) {
